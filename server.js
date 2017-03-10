@@ -2,7 +2,7 @@
 - blinking before sound is played / stopped but hasn't yet executed?
 - don't let user do anything til all sounds are loaded
 - make mouse stuff look nicer
-- add recording!!
+- theme recording things
 */
 
 var express = require('express');  
