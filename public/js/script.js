@@ -1,13 +1,12 @@
 var socket = io();
 
 $(document).ready(function() {
-	var sounds = [];
-	var loadcount = 0; 
-	var target = 3; // how many sounds are we loading?
+	var sounds = []; // array of sounds
+	
 	//pass in the audio context
 	var context = new AudioContext();
 
-	//on iOS, the context will be started on the first valid user action on the #playButton element
+	//on iOS, the context will be started on the first valid user action the .box class
 	StartAudioContext(Tone.context, '.box').then(function(){
 	    console.log('up and running');
 	})
@@ -51,6 +50,8 @@ $(document).ready(function() {
 	}).toMaster();
 	sounds.push(ny);
 
+	/* called when all buffers have loaded
+	sends a request to server for a list of which sound files to play at startup */
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
 	    socket.emit('initialize');
@@ -58,7 +59,6 @@ $(document).ready(function() {
 	console.log(sounds);
 
 	/* takes in clicks and emits the id of the box clicked */
-
 	$(".box").each(function(index) {
 	    $(this).on("click", function(){
 	    	//takes the last number of box__ and sends it through socket.io
