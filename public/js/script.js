@@ -11,6 +11,43 @@ $(document).ready(function() {
 	    console.log('up and running');
 	})
 
+    /* homebrew clicktoggle */
+
+    $.fn.clicktoggle = function(a, b) {
+        return this.each(function() {
+            var clicked = false;
+            $(this).click(function() {
+                if (clicked) {
+                    clicked = false;
+                    return b.apply(this, arguments);
+                }
+                clicked = true;
+                return a.apply(this, arguments);
+            });
+        });
+    };
+
+    /* recorder js! */
+
+    $("#record").clicktoggle(function() {
+        console.dir(Tone.Master);
+        rec = new Recorder(Tone.Master, {
+            callback: function(e){
+                console.log('this line hit');
+                rec.clear();
+                Recorder.forceDownload(e, "recording.wav");
+            }
+        });
+        rec.record();
+        $(this).html('STOP + DOWNLOAD');
+    }, function() {
+        console.log('stop clicked');
+        rec.stop();
+        rec.exportWAV();
+        $(this).html('record');
+    });
+
+
 	//tone.js transport and sound loading
 	Tone.Transport.bpm.value = 127;
 	Tone.Transport.start();
