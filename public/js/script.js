@@ -2,6 +2,15 @@ var socket = io();
 
 $(document).ready(function() {
 	var sounds = []
+	//pass in the audio context
+	var context = new AudioContext();
+
+	//on iOS, the context will be started on the first valid user action on the #playButton element
+	StartAudioContext(context, "#container")
+	StartAudioContext(Tone.context).then(function(){
+	    console.log('up and running');
+	})
+
 	//tone.js transport and sound loading
 	Tone.Transport.bpm.value = 127;
 	Tone.Transport.start();
