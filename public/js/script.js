@@ -1,7 +1,9 @@
 var socket = io();
 
 $(document).ready(function() {
-	var sounds = []
+	var sounds = [];
+	var loadcount = 0; 
+	var target = 3; // how many sounds are we loading?
 	//pass in the audio context
 	var context = new AudioContext();
 
@@ -17,24 +19,37 @@ $(document).ready(function() {
 	var bmore = new Tone.Player({
 		"url": "../sound/bmore.wav",
 		"autostart": false,
-		"loop": false
+		"loop": false,
+		onload: function() {
+			loadcount++;
+		}
 	}).toMaster();
 	sounds.push(bmore);
 
 	var beep = new Tone.Player({
 		"url": "../sound/beep.wav",
 		"autostart": false,
-		"loop": false
+		"loop": false,
+		onload: function() {
+			loadcount++;
+		}
 	}).toMaster();
 	sounds.push(beep); //put object at the end of the sounds array
 
 	var boop = new Tone.Player({
 		"url": "../sound/boop.wav",
 		"autostart": false,
-		"loop": false
+		"loop": false,
+		onload: function() {
+			loadcount++;
+		}
 	}).toMaster();
 	sounds.push(boop); //put object at the end of the sounds array
 
+	Tone.Buffer.on('load', function(){
+	    console.log('all buffers are loaded.');
+	    socket.emit('initialize');
+	});
 	console.log(sounds);
 
 	/* takes in clicks and emits the id of the box clicked */
@@ -47,6 +62,7 @@ $(document).ready(function() {
 			socket.emit('playtoggle', id)
 	    });
 	});
+
 	/* takes in signal to play and plays the corresponding sound file */
 	socket.on('play', function(number){
 		sounds[number].start("@1n");

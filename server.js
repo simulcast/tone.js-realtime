@@ -1,6 +1,6 @@
 /* where i need to go from here:
-- have server store state of program, so that when you log on everything gets called up correctly (opacity states etc) / starts on beat
 - blinking before sound is played / stopped but hasn't yet executed?
+- don't let user do anything til all sounds are loaded
 */
 
 var express = require('express');  
@@ -64,25 +64,51 @@ function removeFromArray(string, array) {
   return array;
 }
 
-var togglestate = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,];
+/* initializing togglestate array */
+
+var numberOfSounds = 16;
+var togglestate = [];
+for (i = 0; i < numberOfSounds; i++) {
+  togglestate.push(0);
+}
 
 io.on('connection', function(socket){
-	/* takes in number and sends it to appropriate soundfile */
+  /* on connection, tell user which sounds are already playing
+  1) wait for initialization request, which comes after all buffers are loaded
+  2) loop through togglestate array
+  3) if a sound is flagged as playing (togglestate[i] == 1), emit the play flag
+   */
+  console.log('a user connected ' + socket.id);
+  //wraps user ID in an object for transmission
+  var user = {id: socket.id};
+  socket.on('initialize', function() {
+    console.log('initialize request from ' + socket.id);
+    for (i = 0; i < togglestate.length; i++) {
+      if (togglestate[i] == 1) {
+        console.log('initialized loop ' + i + ' to play');
+        // sending to individual socketid (private message)
+        io.to(socket.id).emit('play', i);
+      };
+    };
+  });
+
+	/* takes in number of box when a box is clicked and routes it to play corresponding soundfile */
 	socket.on('playtoggle', function(number) {
-		if (togglestate[number] == 0) {
-	  	console.log('play ' + number);
+		if (togglestate[number] == 0) { //if it's not playing, play it & increment counter
+	  	console.log('loop ' + number + ' set to PLAY');
 	  	io.emit('play', number);
 			togglestate[number]++;
 		}
-		else if (togglestate[number] == 1) {
-			console.log('stop '  + number);
+		else if (togglestate[number] == 1) { //if it is playing, stop it & reset counter
+      console.log('loop ' + number + ' set to STOP');
 			io.emit('stop', number);
 			togglestate[number] = 0;
 		};
 	});
 
   socket.on('disconnect', function(){
-	console.log('user disconnected');
+  	//console.log('user disconnected');
+    console.log('user disconnected ' + socket.id);
   });
 });
 
