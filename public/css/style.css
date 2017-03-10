@@ -6,6 +6,17 @@
 	max-width: 100%;
 }
 
+#record {
+	background-color: rgba(255,0,255,.3);
+	color: white;
+	position: absolute;
+	left: 2vw;
+	top: 5vh;
+	font-family: sans-serif;
+	font-size: 2em;
+	z-index: 100;
+}
+
 .box {
 	position: absolute;
 	height: 100vh;

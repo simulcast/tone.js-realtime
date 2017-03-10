@@ -39,7 +39,7 @@ $(document).ready(function() {
             }
         });
         rec.record();
-        $(this).html('STOP + DOWNLOAD');
+        $(this).html('download');
     }, function() {
         console.log('stop clicked');
         rec.stop();
