@@ -11,22 +11,6 @@ $(document).ready(function() {
 	    console.log('up and running');
 	})
 
-    /* homebrew clicktoggle */
-
-    $.fn.clicktoggle = function(a, b) {
-        return this.each(function() {
-            var clicked = false;
-            $(this).click(function() {
-                if (clicked) {
-                    clicked = false;
-                    return b.apply(this, arguments);
-                }
-                clicked = true;
-                return a.apply(this, arguments);
-            });
-        });
-    };
-
     /* recorder js! */
 
     $("#record").clicktoggle(function() {
@@ -127,3 +111,20 @@ $(document).ready(function() {
 	//loop between the first and fourth measures of the Transport's timeline
 	loop.start();
 });
+
+
+/* homebrew clicktoggle */
+
+$.fn.clicktoggle = function(a, b) {
+    return this.each(function() {
+        var clicked = false;
+        $(this).click(function() {
+            if (clicked) {
+                clicked = false;
+                return b.apply(this, arguments);
+            }
+            clicked = true;
+            return a.apply(this, arguments);
+        });
+    });
+};
