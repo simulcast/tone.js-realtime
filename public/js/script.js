@@ -19,32 +19,37 @@ $(document).ready(function() {
 	var bmore = new Tone.Player({
 		"url": "../sound/bmore.wav",
 		"autostart": false,
-		"loop": false,
-		onload: function() {
-			loadcount++;
-		}
+		"loop": false
 	}).toMaster();
 	sounds.push(bmore);
 
-	var beep = new Tone.Player({
-		"url": "../sound/beep.wav",
+	var corvette = new Tone.Player({
+		"url": "../sound/corvette.wav",
 		"autostart": false,
-		"loop": false,
-		onload: function() {
-			loadcount++;
-		}
+		"loop": false
 	}).toMaster();
-	sounds.push(beep); //put object at the end of the sounds array
+	sounds.push(corvette); //put object at the end of the sounds array
 
-	var boop = new Tone.Player({
-		"url": "../sound/boop.wav",
+	var harps = new Tone.Player({
+		"url": "../sound/harps.wav",
 		"autostart": false,
-		"loop": false,
-		onload: function() {
-			loadcount++;
-		}
+		"loop": false
 	}).toMaster();
-	sounds.push(boop); //put object at the end of the sounds array
+	sounds.push(harps);
+
+	var mac = new Tone.Player({
+		"url": "../sound/mac.wav",
+		"autostart": false,
+		"loop": false
+	}).toMaster();
+	sounds.push(mac);
+
+	var ny = new Tone.Player({
+		"url": "../sound/ny.wav",
+		"autostart": false,
+		"loop": false
+	}).toMaster();
+	sounds.push(ny);
 
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
