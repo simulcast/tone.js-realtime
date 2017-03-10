@@ -6,8 +6,7 @@ $(document).ready(function() {
 	var context = new AudioContext();
 
 	//on iOS, the context will be started on the first valid user action on the #playButton element
-	StartAudioContext(context, ".box")
-	StartAudioContext(Tone.context).then(function(){
+	StartAudioContext(Tone.context, '.box').then(function(){
 	    console.log('up and running');
 	})
 
