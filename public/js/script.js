@@ -1,6 +1,7 @@
 var socket = io();
 
 $(document).ready(function() {
+	$("#container").hide(); //hide container
 	var sounds = []; // array of sounds
 	
 	//pass in the audio context
@@ -30,7 +31,6 @@ $(document).ready(function() {
         rec.exportWAV();
         $(this).html('record');
     });
-
 
 	//tone.js transport and sound loading
 	Tone.Transport.bpm.value = 127;
@@ -76,6 +76,8 @@ $(document).ready(function() {
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
 	    socket.emit('initialize');
+	    $("#container").show();
+	    $("#loading").hide();
 	});
 	console.log(sounds);
 
