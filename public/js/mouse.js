@@ -1,4 +1,6 @@
 var socket = io.connect(document.location.origin);
+var colors = [];
+
 //mouse stuff
 function getCursorElement (id) {
   var elementId = 'cursor-' + id;
@@ -101,7 +103,8 @@ Friend.prototype = function(){
         }
     },
     create = function() {
-        this.element = $('<div/>').attr('id',this.idx).addClass('friend').hide().appendTo('body').fadeIn();
+        this.element = $('<div/>').attr('id',this.idx).css('background-color', colors[this.id]).addClass('friend').hide().appendTo('body').fadeIn();
+        console.log(colors[this.id]);
     },
     remove = function() {
         if ( this.element ){
@@ -147,16 +150,18 @@ Meeting.prototype = function(){
                 updateTotalConnections(data.connections);
             });
 
-            // Create player and friends
+            //Create player and friends
             socket.on('init', function (data) {
                 $.each(data.friends,function(index,item){
-                    createFriend.call(self,item,data.player);
+                    //createFriend.call(self,item,data.player);
                 });
                 self.player = new Player(data.player);
             });
 
             // New friend
             socket.on('new friend', function (data) {
+                colors[data.friend] = data.color;
+                //console.log(colors[data.friend]);
                 createFriend.call(self,data.friend);
             });
 
@@ -172,11 +177,13 @@ Meeting.prototype = function(){
             });
 
         },
-        createFriend = function(id,player){
+        createFriend = function(id, player){
             if ( player && player == id ) {
                 return;
             }
-            var friend = new Friend(id);
+            var color = colors[id];
+            console.log(color);
+            var friend = new Friend(id, color);
             if (friend) {
                 this.friends.add(friend);
             }

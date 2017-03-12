@@ -1,8 +1,8 @@
 /* where i need to go from here:
 - blinking before sound is played / stopped but hasn't yet executed?
-- don't let user do anything til all sounds are loaded
+- remove download button on mobile
 - make mouse stuff look nicer
-- theme recording things
+- 
 */
 
 var express = require('express');  
@@ -16,20 +16,22 @@ var totalUsers = 0,
     friendsGroup = [];
 
 io.sockets.on('connection', function (socket) {
+  var id = socket.id;
   // new id
   var thisID = getID();
   // step users++
   addUser();
   // new connection ALL
-  io.sockets.emit('connected', { connections: totalUsers });
+  io.emit('connected', { connections: totalUsers });
   // new connection friends
-  socket.broadcast.emit('new friend', { friend: thisID  });
+  var usercolor = getRandomColor();
+  socket.broadcast.emit('new friend', { friend: id, color: usercolor  });
   // new connection self
-  socket.emit('init',{ player:thisID, friends: friendsGroup });
+  io.emit('init',{ player:id, friends: friendsGroup });
   // disconnect friends
   socket.on('disconnect', function (){
-      removeUser(thisID);
-      socket.broadcast.emit('bye friend',{connections:totalUsers, friend: thisID});
+      removeUser(id);
+      socket.broadcast.emit('bye friend', {connections:totalUsers, friend: id});
   });
   // mouse move
   socket.on('move',function(data){
@@ -121,3 +123,13 @@ app.get('/', function(req, res,next) {
 server.listen(process.env.PORT || 3000, function(){
   console.log('listening on *:3000');
 });
+
+/* helpers */
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}

@@ -95,4 +95,4 @@ function download( url, filename ) {
   link.dispatchEvent(event);
 }
 
-module.exports = Recorder;
+//module.exports = Recorder;

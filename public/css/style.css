@@ -66,10 +66,13 @@
 	left: 80vw;
 }
 
+body, html {
+	cursor: none;
+}
+
 .friend {
-  width: 16px;
-  height: 24px;
-  background: url("../images/cursor.png");
+  width: 1.5em;
+  height: 1.5em;
   position: absolute;
   z-index: 101;
   pointer-events: none;
