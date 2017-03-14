@@ -11,6 +11,7 @@
   "dependencies": {
     "browserify": "^14.1.0",
     "express": "^4.15.0",
+    "hover.css": "^2.0.2",
     "randomcolor": "^0.4.4",
     "socket.io": "^1.7.3",
     "workerify": "^0.3.0"
