@@ -1,8 +1,7 @@
 /* where i need to go from here:
 - blinking before sound is played / stopped but hasn't yet executed?
 - remove download button on mobile
-- make mouse stuff look nicer
-- 
+- make mouse stuff look nicer: colors
 */
 
 var express = require('express');  

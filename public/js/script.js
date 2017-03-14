@@ -1,8 +1,6 @@
 var socket = io();
 
 $(document).ready(function() {
-	/* mouse stuff */
-
 	$("#container").hide(); //hide container
 	//var sounds = []; // array of sounds
 	
