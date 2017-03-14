@@ -10,63 +10,15 @@ var app = express();
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
 
-app.use(express.static('public')); 
+app.use(express.static('public'));
+
+/* mouse stuff */
+
+// Messages
+
 var totalUsers = 0,
     stepID = 0,
     friendsGroup = [];
-
-io.sockets.on('connection', function (socket) {
-  var id = socket.id;
-  // new id
-  var thisID = getID();
-  // step users++
-  addUser();
-  // new connection ALL
-  io.emit('connected', { connections: totalUsers });
-  // new connection friends
-  var usercolor = getRandomColor();
-  socket.broadcast.emit('new friend', { friend: id, color: usercolor  });
-  // new connection self
-  io.emit('init',{ player:id, friends: friendsGroup });
-  // disconnect friends
-  socket.on('disconnect', function (){
-      removeUser(id);
-      socket.broadcast.emit('bye friend', {connections:totalUsers, friend: id});
-  });
-  // mouse move
-  socket.on('move',function(data){
-      socket.broadcast.emit('move', data);
-  });
-  //console.log(friendsGroup);
-});
-
-// Functions
-
-function getID() {
-    friendsGroup.push(++stepID);
-    return stepID;
-}
-
-function addUser(){
-    totalUsers++;
-}
-
-function removeUser(thisID){
-    friendsGroup = removeFromArray(thisID,friendsGroup);
-    totalUsers--;
-}
-
-// Helpers
-
-function removeFromArray(string, array) {
-  var i = 0;
-  for(i in array){
-    if(array[i] === string){
-      array.splice(i,1);
-    }
-  }
-  return array;
-}
 
 /* initializing togglestate array */
 
@@ -77,6 +29,27 @@ for (i = 0; i < numberOfSounds; i++) {
 }
 
 io.on('connection', function(socket){
+  /* mouse stuff */
+  // new id
+  var thisID = getID();
+  // step users++
+  addUser();
+  // new connection ALL
+  io.sockets.emit('connected', totalUsers);
+  // new connection friends
+  socket.broadcast.emit('new friend', thisID);
+  // new connection self
+  socket.emit('init', { player:thisID, friends: friendsGroup });
+  // disconnect friends
+  socket.on('disconnect', function (){
+      removeUser(thisID);
+      socket.broadcast.emit('bye friend', {connections:totalUsers, friend: thisID});
+  });
+  // mouse move
+  socket.on('move',function(data){
+      socket.broadcast.emit('move', data);
+  });
+
   /* on connection, tell user which sounds are already playing
   1) wait for initialization request, which comes after all buffers are loaded
   2) loop through togglestate array
@@ -124,7 +97,35 @@ server.listen(process.env.PORT || 3000, function(){
   console.log('listening on *:3000');
 });
 
-/* helpers */
+/* functions and helpers */
+// Functions
+
+function getID() {
+    friendsGroup.push(++stepID);
+    return stepID;
+}
+
+function addUser(){
+    totalUsers++;
+}
+
+function removeUser(thisID){
+    friendsGroup = removeFromArray(thisID,friendsGroup);
+    totalUsers--;
+}
+
+// Helpers
+
+function removeFromArray(string, array) {
+  var i = 0;
+  for(i in array){
+    if(array[i] === string){
+      array.splice(i,1);
+    }
+  }
+  return array;
+}
+
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
