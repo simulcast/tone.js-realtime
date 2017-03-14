@@ -27,6 +27,7 @@ for (i = 0; i < numberOfSounds; i++) {
 io.on('connection', function(socket){
   //wraps user ID in an object for transmission
   var userID = socket.id;
+
   /* MOUSE
   on connection, send command to clients to create established elements in their windows
   add user's mouse to array and assign it id and color
@@ -36,7 +37,7 @@ io.on('connection', function(socket){
   */
   io.to(socket.id).emit('initialize_mice', mice);
   mice.push({id: socket.id, color: getRandomColor()});
-  io.emit('add_mouse', mice, userID);
+  socket.broadcast.emit('add_mouse', mice, userID);
 
   socket.on('mouse_moving', function(position) {
     //console.log(position);
