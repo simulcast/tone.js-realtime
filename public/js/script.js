@@ -8,7 +8,7 @@ $(document).ready(function() {
 
 	//on iOS, the context will be started on the first valid user action the .box class
 	StartAudioContext(Tone.context, '.box').then(function(){
-	    console.log('up and running');
+	    //console.log('up and running');
 	})
 
     /* recorder js! */
@@ -56,7 +56,7 @@ $(document).ready(function() {
 	    $("#container").show();
 	    $("#loading").hide();
 	});
-	console.log(sounds);
+	//console.log(sounds);
 
 	/* takes in clicks and emits the id of the box clicked */
 	$(".box").each(function(index) {
