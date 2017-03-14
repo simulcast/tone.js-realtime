@@ -1,7 +1,7 @@
-.friend {
-  width: 16px;
-  height: 24px;
-  background: url("../images/cursor.png");
+.cursor {
+  width: 1.5em;
+  height: 1.5em;
+  background-color: black;
   position: absolute;
   z-index: 101;
   pointer-events: none;
