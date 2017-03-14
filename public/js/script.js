@@ -119,8 +119,8 @@ $(document).ready(function() {
 
 	//only add mouse on desktop
     var md = new MobileDetect(window.navigator.userAgent);
-    if (md.mobile() == null) {
-		socket.on('add_mouse', function(mice, id){
+	socket.on('add_mouse', function(mice, id){
+	    if (md.mobile() == null) {
 			for (i = 0; i < mice.length; i++) {
 				//console.log(mice[i].id);
 				if (mice[i].id == id) {
@@ -130,9 +130,8 @@ $(document).ready(function() {
 					$('#'+id).css('backgroundColor', color);
 				}
 			}
-		})    	
-    }
-	
+		}
+	})    	
 	socket.on('disconnect_mouse', function(id){
 		//console.log('disconnect at ' + id);
 		$('#'+id).remove();
