@@ -1,7 +1,6 @@
 /* where i need to go from here:
-- blinking before sound is played / stopped but hasn't yet executed?
-- remove download button on mobile
-- make mouse stuff look nicer: colors
+- make grid more legible
+- add better sounds
 */
 
 var express = require('express');  
@@ -34,9 +33,12 @@ io.on('connection', function(socket){
   
   on move event, take mouse position and send it back out attached to an id
   */
-  io.to(socket.id).emit('initialize_mice', mice);
-  mice.push({id: socket.id, color: getRandomColor()});
-  socket.broadcast.emit('add_mouse', mice, userID);
+
+  socket.on('mouse_connected', function(colorID){
+    io.to(socket.id).emit('initialize_mice', mice);
+    mice.push({id: socket.id, color: colorID});
+    socket.broadcast.emit('add_mouse', mice, userID);
+  })
 
   socket.on('mouse_moving', function(position) {
     //console.log(position);
@@ -100,14 +102,3 @@ app.get('/', function(req, res,next) {
 server.listen(process.env.PORT || 3000, function(){
   console.log('listening on *:3000');
 });
-
-/* functions and helpers */
-
-function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}

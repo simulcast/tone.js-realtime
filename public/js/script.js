@@ -70,20 +70,22 @@ $(document).ready(function() {
 
 	/* takes in signal to play and plays the corresponding sound file */
 	socket.on('play', function(number){
-		$("#box" + number).css("opacity", .5);
+		$("#box" + number).removeClass("stopped");
+		$("#box" + number).addClass("about-to-play"); // change color to "about-to-play"
 		Tone.Draw.schedule(function(){
-			//the callback synced to the animation frame at the given time
-			$("#box" + number).css("opacity", .25);
-		}, "@1n"); // lock color in on downbeat
+			$("#box" + number).removeClass("about-to-play");
+			$("#box" + number).addClass("playing");  // change color to "playing"
+		}, "@1n");
 		sounds.startLoop(number, "@1n"); // play it on beat
 	});
 
 	/* takes in signal to stop and stops the corresponding sound file */
 	socket.on('stop', function(number){
-		$("#box" + number).css("opacity", .5);
+		$("#box" + number).removeClass("playing");
+		$("#box" + number).addClass("about-to-stop"); // change color to "about-to-stop"
 		Tone.Draw.schedule(function(){
-			//the callback synced to the animation frame at the given time
-			$("#box" + number).css("opacity", 1);
+			$("#box" + number).removeClass("about-to-stop");
+			$("#box" + number).addClass("stopped"); // changed color to "stopped"
 		}, "@1n"); // return color on downbeat
 		sounds.stop(number, "@1n"); // play it on beat
 	});
@@ -97,6 +99,10 @@ $(document).ready(function() {
 	loop.start();
 
 	/* mouse happenings */
+	var colorID = randomColor({
+	   luminosity: 'light'
+	});
+	socket.emit('mouse_connected', colorID);
 
 	$('body').on('mousemove', function() {
 		var position = {
