@@ -4,7 +4,7 @@ $(document).ready(function() {
 	/* mouse stuff */
 
 	$("#container").hide(); //hide container
-	var sounds = []; // array of sounds
+	//var sounds = []; // array of sounds
 	
 	//pass in the audio context
 	var context = new AudioContext();
@@ -38,40 +38,18 @@ $(document).ready(function() {
 	Tone.Transport.bpm.value = 127;
 	Tone.Transport.start();
 
-	var bmore = new Tone.Player({
-		"url": "../sound/bmore.wav",
-		"autostart": false,
-		"loop": false
-	}).toMaster();
-	sounds.push(bmore);
-
-	var corvette = new Tone.Player({
-		"url": "../sound/corvette.wav",
-		"autostart": false,
-		"loop": false
-	}).toMaster();
-	sounds.push(corvette); //put object at the end of the sounds array
-
-	var harps = new Tone.Player({
-		"url": "../sound/harps.wav",
-		"autostart": false,
-		"loop": false
-	}).toMaster();
-	sounds.push(harps);
-
-	var mac = new Tone.Player({
-		"url": "../sound/mac.wav",
-		"autostart": false,
-		"loop": false
-	}).toMaster();
-	sounds.push(mac);
-
-	var ny = new Tone.Player({
-		"url": "../sound/ny.wav",
-		"autostart": false,
-		"loop": false
-	}).toMaster();
-	sounds.push(ny);
+	/* multiplayer with sounds loaded in as array of paths to files
+	accessible by sounds.command(number);
+	*/
+	var sounds = new Tone.MultiPlayer(
+		[
+		"../sound/bmore.wav", 
+		"../sound/corvette.wav",
+		"../sound/harps.wav",
+		"../sound/mac.wav",
+		"../sound/ny.wav"
+		]
+	).toMaster();
 
 	/* called when all buffers have loaded
 	sends a request to server for a list of which sound files to play at startup */
@@ -95,16 +73,22 @@ $(document).ready(function() {
 
 	/* takes in signal to play and plays the corresponding sound file */
 	socket.on('play', function(number){
-		sounds[number].start("@1n");
-		sounds[number].loop = true;
-		$("#box" + number).css('opacity', '0.5');
+		$("#box" + number).css("opacity", .5);
+		Tone.Draw.schedule(function(){
+			//the callback synced to the animation frame at the given time
+			$("#box" + number).css("opacity", 0);
+		}, "@1n"); // lock color in on downbeat
+		sounds.startLoop(number, "@1n"); // play it on beat
 	});
 
 	/* takes in signal to stop and stops the corresponding sound file */
 	socket.on('stop', function(number){
-	  	sounds[number].stop("@1n");
-	  	sounds[number].loop = false;
-		$("#box" + number).css('opacity', '1.0');
+		$("#box" + number).css("opacity", .5);
+		Tone.Draw.schedule(function(){
+			//the callback synced to the animation frame at the given time
+			$("#box" + number).css("opacity", 1);
+		}, "@1n"); // return color on downbeat
+		sounds.stop(number, "@1n"); // play it on beat
 	});
 
 	/* beat counter for log file */
