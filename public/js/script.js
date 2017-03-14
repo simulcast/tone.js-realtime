@@ -1,9 +1,8 @@
 var socket = io();
 
 $(document).ready(function() {
-	$("#container").hide(); //hide container
-	//var sounds = []; // array of sounds
-	
+	$("#container").hide(); //hide container on load so it can show when buffered
+
 	//pass in the audio context
 	var context = new AudioContext();
 
@@ -74,7 +73,7 @@ $(document).ready(function() {
 		$("#box" + number).css("opacity", .5);
 		Tone.Draw.schedule(function(){
 			//the callback synced to the animation frame at the given time
-			$("#box" + number).css("opacity", 0);
+			$("#box" + number).css("opacity", .25);
 		}, "@1n"); // lock color in on downbeat
 		sounds.startLoop(number, "@1n"); // play it on beat
 	});
@@ -98,6 +97,7 @@ $(document).ready(function() {
 	loop.start();
 
 	/* mouse happenings */
+
 	$('body').on('mousemove', function() {
 		var position = {
 			x: ((event.pageX / $(window).width()) * 100).toFixed(2),
@@ -117,17 +117,21 @@ $(document).ready(function() {
 		}
 	});
 
-	socket.on('add_mouse', function(mice, id){
-		for (i = 0; i < mice.length; i++) {
-			//console.log(mice[i].id);
-			if (mice[i].id == id) {
-				var id = mice[i].id;
-				var color = mice[i].color;
-				$('body').append('<div class="cursor" id="'+id+'"></div>');
-				$('#'+id).css('backgroundColor', color);
+	//only add mouse on desktop
+    var md = new MobileDetect(window.navigator.userAgent);
+    if (md.mobile() == null) {
+		socket.on('add_mouse', function(mice, id){
+			for (i = 0; i < mice.length; i++) {
+				//console.log(mice[i].id);
+				if (mice[i].id == id) {
+					var id = mice[i].id;
+					var color = mice[i].color;
+					$('body').append('<div class="cursor" id="'+id+'"></div>');
+					$('#'+id).css('backgroundColor', color);
+				}
 			}
-		}
-	})
+		})    	
+    }
 	
 	socket.on('disconnect_mouse', function(id){
 		//console.log('disconnect at ' + id);
