@@ -37,14 +37,15 @@
 }
 
 #record {
-	background-color: rgba(255,0,255,.3);
+	background-color: rgba(255,0,255,.5);
 	color: white;
 	position: absolute;
-	left: 2vw;
-	top: 5vh;
+	right: 1em;
+	bottom: 1em;
 	font-family: sans-serif;
 	font-size: 2em;
 	z-index: 100;
+	cursor: pointer;
 }
 
 .row {
@@ -55,11 +56,11 @@
 	background-color: rgba(0,0,0,.4);
 }
 
-/*
-body, html {
-	cursor: none;
+@media all and (max-width: 768px) {
+  #record {
+    display: none;
+  }
 }
-*/
 
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
