@@ -12,13 +12,9 @@ var io = require('socket.io')(server);
 
 app.use(express.static('public'));
 
-/* mouse stuff */
+/* initializing mice array */
 
-// Messages
-
-var totalUsers = 0,
-    stepID = 0,
-    friendsGroup = [];
+var mice = [];
 
 /* initializing togglestate array */
 
@@ -29,35 +25,33 @@ for (i = 0; i < numberOfSounds; i++) {
 }
 
 io.on('connection', function(socket){
-  /* mouse stuff */
-  // new id
-  var thisID = getID();
-  // step users++
-  addUser();
-  // new connection ALL
-  io.sockets.emit('connected', totalUsers);
-  // new connection friends
-  socket.broadcast.emit('new friend', thisID);
-  // new connection self
-  socket.emit('init', { player:thisID, friends: friendsGroup });
-  // disconnect friends
-  socket.on('disconnect', function (){
-      removeUser(thisID);
-      socket.broadcast.emit('bye friend', {connections:totalUsers, friend: thisID});
-  });
-  // mouse move
-  socket.on('move',function(data){
-      socket.broadcast.emit('move', data);
-  });
+  //wraps user ID in an object for transmission
+  var userID = socket.id;
+  /* MOUSE
+  on connection, send command to clients to create established elements in their windows
+  add user's mouse to array and assign it id and color
+  broadcast new mouse to everybody but the user
+  
+  on move event, take mouse position and send it back out attached to an id
+  */
+  io.to(socket.id).emit('initialize_mice', mice);
+  mice.push({id: socket.id, color: getRandomColor()});
+  io.emit('add_mouse', mice, userID);
 
-  /* on connection, tell user which sounds are already playing
+  socket.on('mouse_moving', function(position) {
+    //console.log(position);
+    io.emit('animate_cursor', position, userID);
+  })
+  //console.log(mice);
+
+  /* SOUNDS
+  on connection, tell user which sounds are already playing
   1) wait for initialization request, which comes after all buffers are loaded
   2) loop through togglestate array
   3) if a sound is flagged as playing (togglestate[i] == 1), emit the play flag
    */
   console.log('a user connected ' + socket.id);
-  //wraps user ID in an object for transmission
-  var user = {id: socket.id};
+
   socket.on('initialize', function() {
     console.log('initialize request from ' + socket.id);
     for (i = 0; i < togglestate.length; i++) {
@@ -84,8 +78,18 @@ io.on('connection', function(socket){
 	});
 
   socket.on('disconnect', function(){
-  	//console.log('user disconnected');
+  	
     console.log('user disconnected ' + socket.id);
+    /* remove mouse from array so it wont be initialized anymore */
+    for (i = 0; i < mice.length; i++) {
+      if(mice[i].id == userID){
+        console.log('mouse removed');
+        mice.splice(i, 1);
+        break;
+      };
+    };
+    /* send a disconnect signal to remove it from users windows */
+    io.emit('disconnect_mouse', userID);
   });
 });
 
@@ -98,33 +102,6 @@ server.listen(process.env.PORT || 3000, function(){
 });
 
 /* functions and helpers */
-// Functions
-
-function getID() {
-    friendsGroup.push(++stepID);
-    return stepID;
-}
-
-function addUser(){
-    totalUsers++;
-}
-
-function removeUser(thisID){
-    friendsGroup = removeFromArray(thisID,friendsGroup);
-    totalUsers--;
-}
-
-// Helpers
-
-function removeFromArray(string, array) {
-  var i = 0;
-  for(i in array){
-    if(array[i] === string){
-      array.splice(i,1);
-    }
-  }
-  return array;
-}
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
