@@ -14,6 +14,7 @@
     "hover.css": "^2.0.2",
     "randomcolor": "^0.4.4",
     "socket.io": "^1.7.3",
+    "tone": "^0.9.0",
     "workerify": "^0.3.0"
   }
 }
