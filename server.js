@@ -76,25 +76,22 @@ io.on('connection', function(socket){
     io.to(socket.id).emit('show_board'); //start individual transport
     for (i = 0; i < togglestate.length; i++) {
       if (togglestate[i] == 1) {
-        console.log('initialized loop ' + i + ' to play');
+        console.log('initialized loop ' + i + ' to play for ' + socket.id);
         // sending to individual socketid (private message)
         io.to(socket.id).emit('play', i);
       };
     };
   });
-  
-  socket.on('initial_state_request', function() {
-  });
 
 	/* takes in number of box when a box is clicked and routes it to play corresponding soundfile */
 	socket.on('playtoggle', function(number) {
 		if (togglestate[number] == 0) { //if it's not playing, play it & increment counter
-	  	console.log('loop ' + number + ' set to PLAY');
+	  	console.log('loop ' + number + ' set to PLAY by ' + socket.id);
 	  	io.emit('play', number);
 			togglestate[number]++;
 		}
 		else if (togglestate[number] == 1) { //if it is playing, stop it & reset counter
-      console.log('loop ' + number + ' set to STOP');
+      console.log('loop ' + number + ' set to STOP by ' + socket.id);
 			io.emit('stop', number);
 			togglestate[number] = 0;
 		};

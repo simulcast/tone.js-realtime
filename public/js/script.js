@@ -24,7 +24,7 @@ $(document).ready(function() {
             callback: function(e){
                 console.log('this line hit');
                 rec.clear();
-                Recorder.forceDownload(e, "recording.wav");
+                Recorder.forceDownload(e, "gridbud_recording.wav");
             }
         });
         rec.record();
@@ -106,7 +106,7 @@ $(document).ready(function() {
 	    $(this).on("click", function(){
 	    	//takes the last number of box__ and sends it through socket.io
 	        var id = $(this).attr('id').substring(3);
-	        console.log(id); 
+	        console.log(id);
 			socket.emit('playtoggle', id)
 	    });
 	});
