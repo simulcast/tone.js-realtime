@@ -96,12 +96,15 @@ $(document).ready(function() {
 
 	socket.on('show_board', function() {
 		if (Tone.Transport.state == 'started') {
-			//console.log('tranposrt has already started');
+			console.log('tranposrt has already started, showing board');
 			Tone.Draw.schedule(function() {
 			    $("#container").show();
 			    $("#loading").hide();
 			}, "@1n");
 		};
+		else if (Tone.Transport.state == 'stopped') {
+			console.log('tranposrt has not started yet, cannot show board');
+		}
 	});
 
 	/* takes in clicks and emits the id of the box clicked */
