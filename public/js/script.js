@@ -84,7 +84,7 @@ $(document).ready(function() {
 	starts transport */
 	
 	socket.on('beat', function() {
-		console.log(sounds.buffers.loaded);
+		//console.log(sounds.buffers.loaded);
 		if (sounds.buffers.loaded == true) {
 			startTransport(); // start the transport only when the buffers have loaded
 		}
