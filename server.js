@@ -76,10 +76,14 @@ io.on('connection', function(socket){
     io.to(socket.id).emit('show_board'); //start individual transport
     for (i = 0; i < togglestate.length; i++) {
       if (togglestate[i] == 1) {
-        console.log('initialized loop ' + i + ' to play for ' + socket.id);
+        console.log('initialized loop ' + i + ' to PLAY for ' + socket.id);
         // sending to individual socketid (private message)
         io.to(socket.id).emit('play', i);
       };
+      if (togglestate[i] == 0) {
+        console.log('initialized loop ' + i + ' to STOP for ' + socket.id);
+        io.to(socket.id).emit('stop', i);
+      }
     };
   });
 
