@@ -2,6 +2,12 @@ var socket = io();
 
 $(document).ready(function() {
 	$("#container").hide(); //hide container on load so it can show when buffered
+
+	/* hide recorder div on mobile */
+	if (isMobile.any == true) {
+		$("#record").hide();
+	}
+	
 	//pass in the audio context
 	var context = new AudioContext();
 

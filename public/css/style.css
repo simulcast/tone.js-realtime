@@ -91,9 +91,3 @@ html, body {
 .about-to-stop {
 	background-color: rgba(255, 0, 0, .4);
 }
-
-@media all and (max-width: 768px) {
-  #record {
-    display: none;
-  }
-}
