@@ -2,7 +2,7 @@ var socket = io();
 
 $(document).ready(function() {
 	$("#container").hide(); //hide container on load so it can show when buffered
-
+	$("#startprompt").hide();
 	/* hide recorder div on mobile */
 	if (isMobile.any == true) {
 		$("#record").hide();
