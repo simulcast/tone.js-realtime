@@ -8,11 +8,17 @@ $(document).ready(function() {
 		$("#record").hide();
 	}
 
+	/* start prompt for mobile */
+	$("#startprompt").click(function() {
+		$("#startprompt").hide();
+		$("#container").show();
+	})
+
 	//pass in the audio context
 	var context = new AudioContext();
 
 	//on iOS, the context will be started on the first valid user action the .box class
-	StartAudioContext(Tone.context, '.box').then(function(){
+	StartAudioContext(Tone.context, '#startprompt').then(function(){
 	    //console.log('up and running');
 	})
 
@@ -95,11 +101,16 @@ $(document).ready(function() {
 	otherwise wait half a second */
 
 	socket.on('show_board', function() {
-		if (Tone.Transport.state == 'started') {
-			$("#container").show();
+		if (Tone.Transport.state == 'started' && isMobile.any == true) { //hide loading, show prompt on mobile
+			console.log('tranposrt has already started, showing board on user prompt');
 			$("#loading").hide();
+			$("#startprompt").show();
+		}
+		else if (Tone.Transport.state == 'started' && isMobile.any == false) {
 			console.log('tranposrt has already started, showing board on downbeat');
-			Tone.Draw.schedule(function() {
+			Tone.Draw.schedule(function() { //hide loading, show board on desktop
+				$("#loading").hide();
+				$("#container").show();
 			}, "@1n");
 		}
 		else if (Tone.Transport.state == 'stopped') {
