@@ -67,6 +67,7 @@ io.on('connection', function(socket){
   1) wait for initialization request, which comes after all buffers are loaded
   2) loop through togglestate array
   3) if a sound is flagged as playing (togglestate[i] == 1), emit the play flag
+  4) if it's flagged as stopped (togglestate[i] == 0), emit the stopped flag
    */
    
   console.log('a user connected ' + socket.id);

@@ -76,6 +76,7 @@ $(document).ready(function() {
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
 	    //socket.emit('initialize');
+		console.log(sounds.buffers);
 	});
 
 	/* called on regular interval from server, but only starts the transport once
@@ -96,8 +97,10 @@ $(document).ready(function() {
 	socket.on('show_board', function() {
 		if (Tone.Transport.state == 'started') {
 			//console.log('tranposrt has already started');
-		    $("#container").show();
-		    $("#loading").hide();
+			Tone.Draw.schedule(function() {
+			    $("#container").show();
+			    $("#loading").hide();
+			}, "@1n");
 		};
 	});
 
@@ -132,14 +135,6 @@ $(document).ready(function() {
 		}, "@1n"); // return color on downbeat
 		sounds.stop(number, "@1n"); // play it on beat
 	});
-
-	/* beat counter for log file */
-	var loop = new Tone.Loop(function(time){
-	   //console.log('beat #');
-	}, "4n");
-
-	//loop between the first and fourth measures of the Transport's timeline
-	loop.start();
 
 	/* mouse happenings, only do on desktop */
 	if (isMobile.any == false) {
