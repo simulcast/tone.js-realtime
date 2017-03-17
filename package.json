@@ -12,8 +12,12 @@
     "browserify": "^14.1.0",
     "express": "^4.15.0",
     "hover.css": "^2.0.2",
+    "jquery": "^3.1.1",
+    "later": "^1.2.0",
     "randomcolor": "^0.4.4",
+    "repeat": "0.0.6",
     "socket.io": "^1.7.3",
+    "timer-machine": "^1.1.0",
     "tone": "^0.9.0",
     "workerify": "^0.3.0"
   }
