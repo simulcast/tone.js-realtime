@@ -7,7 +7,7 @@ $(document).ready(function() {
 	if (isMobile.any == true) {
 		$("#record").hide();
 	}
-	
+
 	//pass in the audio context
 	var context = new AudioContext();
 
@@ -41,11 +41,22 @@ $(document).ready(function() {
 	*/
 	var sounds = new Tone.MultiPlayer(
 		[
-		"../sound/bmore.wav", 
-		"../sound/corvette.wav",
-		"../sound/harps.wav",
-		"../sound/mac.wav",
-		"../sound/ny.wav"
+		"../sound/bmore.mp3", 
+		"../sound/corvette.mp3",
+		"../sound/harps.mp3",
+		"../sound/mac.mp3",
+		"../sound/ny.mp3",
+		"../sound/lips.mp3",
+		"../sound/losecontrol.mp3",
+		"../sound/fergie.mp3",
+		"../sound/hwwambo.mp3",
+		"../sound/chance.mp3",
+		"../sound/pool.mp3",
+		"../sound/kendrick.mp3",
+		"../sound/milkshake.mp3",
+		"../sound/snoop.mp3",
+		"../sound/kkb.mp3",
+		"../sound/hella.mp3"
 		]
 	).toMaster();
 
