@@ -31,10 +31,6 @@ $(document).ready(function() {
         $(this).html('record');
     });
 
-	//tone.js transport and sound loading
-	Tone.Transport.bpm.value = 127;
-	Tone.Transport.start();
-
 	/* multiplayer with sounds loaded in as array of paths to files
 	accessible by sounds.command(number);
 	*/
@@ -48,15 +44,46 @@ $(document).ready(function() {
 		]
 	).toMaster();
 
+	/* start tranposrt helper so that it only occurs once */
+
+	var startTransport = function(){
+		startTransport = function(){}; // kill it as soon as it was called
+		//tone.js transport
+		Tone.Transport.bpm.value = 127;
+		Tone.Transport.start();
+		console.log('transport started');
+		socket.emit('initialize');
+	};
+
 	/* called when all buffers have loaded
 	sends a request to server for a list of which sound files to play at startup */
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
-	    socket.emit('initialize');
-	    $("#container").show();
-	    $("#loading").hide();
+	    //socket.emit('initialize');
 	});
-	//console.log(sounds);
+
+	/* called on regular interval from server, but only starts the transport once
+	this syncronizes all the windows to roughly the same downbeat for smoother collaboration
+	starts transport */
+	
+	socket.on('beat', function() {
+		console.log(sounds.buffers.loaded);
+		if (sounds.buffers.loaded == true) {
+			startTransport(); // start the transport only when the buffers have loaded
+		}
+	});
+
+	/* received after sending init request to server
+	if the transport has already started, show/hide the right windows
+	otherwise wait half a second */
+
+	socket.on('show_board', function() {
+		if (Tone.Transport.state == 'started') {
+			//console.log('tranposrt has already started');
+		    $("#container").show();
+		    $("#loading").hide();
+		};
+	});
 
 	/* takes in clicks and emits the id of the box clicked */
 	$(".box").each(function(index) {

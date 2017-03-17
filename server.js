@@ -1,18 +1,33 @@
 /* where i need to go from here:
-- make grid more legible
 - add better sounds
+- sync transport start times
 */
 
 var express = require('express');  
 var app = express();  
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
+var Repeat = require('Repeat');
+var $ = require("jquery");
+
+var bpm = 127; //bpm is 127
+var ms = (60000 / bpm)*4;
 
 app.use(express.static('public'));
+
+/* keeping track of the beat for sending initialization states to windows */
+
+Repeat(beat).every(ms, 'ms').start();
+
+function beat() {
+  io.emit('beat');
+};
 
 /* initializing mice array */
 
 var mice = [];
+
+
 
 /* initializing togglestate array */
 
@@ -23,6 +38,7 @@ for (i = 0; i < numberOfSounds; i++) {
 }
 
 io.on('connection', function(socket){
+
   //wraps user ID in an object for transmission
   var userID = socket.id;
 
@@ -52,10 +68,12 @@ io.on('connection', function(socket){
   2) loop through togglestate array
   3) if a sound is flagged as playing (togglestate[i] == 1), emit the play flag
    */
+   
   console.log('a user connected ' + socket.id);
 
   socket.on('initialize', function() {
     console.log('initialize request from ' + socket.id);
+    io.to(socket.id).emit('show_board'); //start individual transport
     for (i = 0; i < togglestate.length; i++) {
       if (togglestate[i] == 1) {
         console.log('initialized loop ' + i + ' to play');
@@ -63,6 +81,9 @@ io.on('connection', function(socket){
         io.to(socket.id).emit('play', i);
       };
     };
+  });
+  
+  socket.on('initial_state_request', function() {
   });
 
 	/* takes in number of box when a box is clicked and routes it to play corresponding soundfile */
