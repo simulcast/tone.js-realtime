@@ -2,7 +2,6 @@ var socket = io();
 
 $(document).ready(function() {
 	$("#container").hide(); //hide container on load so it can show when buffered
-
 	//pass in the audio context
 	var context = new AudioContext();
 
@@ -125,20 +124,22 @@ $(document).ready(function() {
 	//loop between the first and fourth measures of the Transport's timeline
 	loop.start();
 
-	/* mouse happenings */
-	var colorID = randomColor({
-	   luminosity: 'light'
-	});
-	socket.emit('mouse_connected', colorID);
+	/* mouse happenings, only do on desktop */
+	if (isMobile.any == false) {
+		var colorID = randomColor({
+		   luminosity: 'light'
+		});
+		socket.emit('mouse_connected', colorID);
 
-	$('body').on('mousemove', function() {
-		var position = {
-			x: ((event.pageX / $(window).width()) * 100).toFixed(2),
-			y: ((event.pageY / $(window).height()) * 100).toFixed(2)
-		}
-		//console.log(position.x);
-		socket.emit('mouse_moving', position);
-	});
+		$('body').on('mousemove', function() {
+			var position = {
+				x: ((event.pageX / $(window).width()) * 100).toFixed(2),
+				y: ((event.pageY / $(window).height()) * 100).toFixed(2)
+			}
+			//console.log(position.x);
+			socket.emit('mouse_moving', position);
+		});
+	};
 
 	socket.on('initialize_mice', function(mice){
 		for (i = 0; i < mice.length; i++) {
