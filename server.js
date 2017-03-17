@@ -50,10 +50,16 @@ io.on('connection', function(socket){
   on move event, take mouse position and send it back out attached to an id
   */
 
-  socket.on('mouse_connected', function(colorID){
-    io.to(socket.id).emit('initialize_mice', mice);
-    mice.push({id: socket.id, color: colorID});
-    socket.broadcast.emit('add_mouse', mice, userID);
+  socket.on('mouse_connected', function(colorID, mobile){
+    if (mobile == true) {
+      io.to(socket.id).emit('initialize_mice', mice);
+      mice.push({id: socket.id, color: colorID});
+    }
+    else {
+      io.to(socket.id).emit('initialize_mice', mice);
+      mice.push({id: socket.id, color: colorID});      
+      socket.broadcast.emit('add_mouse', mice, userID);
+    }
   })
 
   socket.on('mouse_moving', function(position) {
@@ -81,10 +87,12 @@ io.on('connection', function(socket){
         // sending to individual socketid (private message)
         io.to(socket.id).emit('play', i);
       };
+      /*
       if (togglestate[i] == 0) {
         console.log('initialized loop ' + i + ' to STOP for ' + socket.id);
         io.to(socket.id).emit('stop', i);
       }
+      */
     };
   });
 

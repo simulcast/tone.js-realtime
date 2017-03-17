@@ -76,7 +76,7 @@ $(document).ready(function() {
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
 	    //socket.emit('initialize');
-		console.log(sounds.buffers);
+		//console.log(sounds.buffers._buffers);
 	});
 
 	/* called on regular interval from server, but only starts the transport once
@@ -111,6 +111,7 @@ $(document).ready(function() {
 	        var id = $(this).attr('id').substring(3);
 	        console.log(id);
 			socket.emit('playtoggle', id)
+			//console.log(sounds.buffers.get(id)._buffer.state);
 	    });
 	});
 
@@ -127,6 +128,8 @@ $(document).ready(function() {
 
 	/* takes in signal to stop and stops the corresponding sound file */
 	socket.on('stop', function(number){
+		var stop = sounds.buffers.get(number);
+		/* if it's already stopped, do nothing */
 		$("#box" + number).removeClass("playing");
 		$("#box" + number).addClass("about-to-stop"); // change color to "about-to-stop"
 		Tone.Draw.schedule(function(){
@@ -137,11 +140,11 @@ $(document).ready(function() {
 	});
 
 	/* mouse happenings, only do on desktop */
+	socket.emit('mouse_connected', colorID, isMobile.any);
 	if (isMobile.any == false) {
 		var colorID = randomColor({
 		   luminosity: 'light'
 		});
-		socket.emit('mouse_connected', colorID);
 
 		$('body').on('mousemove', function() {
 			var position = {
