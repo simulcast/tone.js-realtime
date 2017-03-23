@@ -45,9 +45,10 @@ $(document).ready(function() {
 	/* multiplayer with sounds loaded in as array of paths to files
 	accessible by sounds.command(number);
 	*/
-	var sounds = new Tone.MultiPlayer(
-		[
-		"../sound/bmore.mp3", 
+	var sounds = [];
+	var frozen = [];
+	var files = new Tone.Buffers([
+		"../../sound/bmore.mp3",
 		"../sound/corvette.mp3",
 		"../sound/harps.mp3",
 		"../sound/mac.mp3",
@@ -61,10 +62,20 @@ $(document).ready(function() {
 		"../sound/kendrick.mp3",
 		"../sound/milkshake.mp3",
 		"../sound/snoop.mp3",
-		"../sound/kkb.mp3",
+		"../../sound/kkb.mp3",
 		"../sound/hella.mp3"
-		]
-	).toMaster();
+	], function() { // fill sounds[] array with players after all buffers are loaded
+		console.log('all buffers loaded');
+		for (i = 0; i < 16; i++) {
+				sounds[i] = new Tone.Player({
+					"url" : files.get(i),
+					"loop" : true
+				}).toMaster();
+				//sounds[i].buffer = files.get("bmore");
+				//console.log(sounds[i]);
+				frozen[i] = false;
+			}
+	});
 
 	/* start tranposrt helper so that it only occurs once */
 
@@ -81,8 +92,8 @@ $(document).ready(function() {
 	sends a request to server for a list of which sound files to play at startup */
 	Tone.Buffer.on('load', function(){
 	    console.log('all buffers are loaded.');
+    	//console.log(files.get(12));
 	    //socket.emit('initialize');
-		//console.log(sounds.buffers._buffers);
 	});
 
 	/* called on regular interval from server, but only starts the transport once
@@ -90,8 +101,8 @@ $(document).ready(function() {
 	starts transport */
 	
 	socket.on('beat', function() {
-		//console.log(sounds.buffers.loaded);
-		if (sounds.buffers.loaded == true) {
+		//sconsole.log(buffers.loaded);
+		if (files.loaded == true) {
 			startTransport(); // start the transport only when the buffers have loaded
 		}
 	});
@@ -120,37 +131,71 @@ $(document).ready(function() {
 
 	/* takes in clicks and emits the id of the box clicked */
 	$(".box").each(function(index) {
+		/* TO DO++
+		put in handlers here to see whether something is playing or stopped before sending out a toggle
+		*/
 	    $(this).on("click", function(){
 	    	//takes the last number of box__ and sends it through socket.io
 	        var id = $(this).attr('id').substring(3);
-	        console.log(id);
-			socket.emit('playtoggle', id)
+	        console.log(sounds[id].state);
+	        if (sounds[id].state == "started") { // if it's playing, send a stop command
+	        	console.log(id + ' is playing, telling it to stop');
+	        	socket.emit('stop', id);
+	        }
+	        else if (sounds[id].state == "stopped") {// if it's stopped, send a play command
+	        	console.log(id + ' is stopped, telling it to play');
+	        	socket.emit('play', id);
+	        }
+			//socket.emit('playtoggle', id)
 			//console.log(sounds.buffers.get(id)._buffer.state);
 	    });
 	});
 
 	/* takes in signal to play and plays the corresponding sound file */
 	socket.on('play', function(number){
-		$("#box" + number).removeClass("stopped");
-		$("#box" + number).addClass("about-to-play"); // change color to "about-to-play"
-		Tone.Draw.schedule(function(){
-			$("#box" + number).removeClass("about-to-play");
-			$("#box" + number).addClass("playing");  // change color to "playing"
-		}, "@1n");
-		sounds.startLoop(number, "@1n"); // play it on beat
+		if (sounds[number].state == "started") { // if it's playing already, do NOTHING
+			console.log(number + " is already playing")
+        }
+        if (frozen[number] == true) {
+        	console.log(number + "is frozen");
+        }
+    	else if (sounds[number].state == "stopped") { // if it's stopped, do the following...
+    		console.log(number + " is stopped, setting it to play on downbeat");
+    		frozen[number] = true;
+			$("#box" + number).removeClass("stopped");
+			$("#box" + number).addClass("about-to-play"); // change color to "about-to-play"
+			Tone.Draw.schedule(function(){
+				$("#box" + number).removeClass("about-to-play");
+				$("#box" + number).addClass("playing");  // change color to "playing"
+				frozen[number] = false;
+			}, "@1n");
+			sounds[number].start("@1n"); // play it on beat
+    	}
 	});
 
 	/* takes in signal to stop and stops the corresponding sound file */
 	socket.on('stop', function(number){
-		var stop = sounds.buffers.get(number);
 		/* if it's already stopped, do nothing */
+		if (sounds[number].state = "stopped") {
+			console.log(number + " is already stopped")
+		}
+		/* if it's frozen, do nothing */
+		if (frozen[number] == true) { 
+			console.log(number + " is frozen, can't stop");
+		}
+		/* if it's playing, stop it on downbeat */
+
+		else if (sounds[number].state = "playing") {
+		frozen[number] = true;
 		$("#box" + number).removeClass("playing");
-		$("#box" + number).addClass("about-to-stop"); // change color to "about-to-stop"
-		Tone.Draw.schedule(function(){
-			$("#box" + number).removeClass("about-to-stop");
-			$("#box" + number).addClass("stopped"); // changed color to "stopped"
-		}, "@1n"); // return color on downbeat
-		sounds.stop(number, "@1n"); // play it on beat
+			$("#box" + number).addClass("about-to-stop"); // change color to "about-to-stop"
+			Tone.Draw.schedule(function(){
+				$("#box" + number).removeClass("about-to-stop");
+				$("#box" + number).addClass("stopped"); // changed color to "stopped"
+				frozen[number] = false;
+			}, "@1n"); // return color on downbeat
+			sounds[number].stop("@1n"); // stop it on beat
+		};
 	});
 
 	/* mouse happenings, only do on desktop */
@@ -200,9 +245,8 @@ $(document).ready(function() {
 		//console.log('animating id ' + id + 'at ' + position);
 		$('#'+id).css('top', position.y+'%');
 		$('#'+id).css('left', position.x+'%');
-	})
+	});
 });
-
 
 /* homebrew clicktoggle */
 

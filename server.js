@@ -1,6 +1,5 @@
 /* where i need to go from here:
-- add better sounds
-- sync transport start times
+add redundancies for play / stop toggles on user side (if it's playing, don't let it have play be sent again)
 */
 
 var express = require('express');  
@@ -97,18 +96,21 @@ io.on('connection', function(socket){
   });
 
 	/* takes in number of box when a box is clicked and routes it to play corresponding soundfile */
-	socket.on('playtoggle', function(number) {
+	socket.on('play', function(number) {
 		if (togglestate[number] == 0) { //if it's not playing, play it & increment counter
 	  	console.log('loop ' + number + ' set to PLAY by ' + socket.id);
 	  	io.emit('play', number);
 			togglestate[number]++;
 		}
-		else if (togglestate[number] == 1) { //if it is playing, stop it & reset counter
-      console.log('loop ' + number + ' set to STOP by ' + socket.id);
-			io.emit('stop', number);
-			togglestate[number] = 0;
-		};
 	});
+
+  socket.on('stop', function(number) {
+      if (togglestate[number] == 1) { //if it is playing, stop it & reset counter
+      console.log('loop ' + number + ' set to STOP by ' + socket.id);
+      io.emit('stop', number);
+      togglestate[number] = 0;
+    };
+  });
 
   socket.on('disconnect', function(){
   	
