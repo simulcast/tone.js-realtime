@@ -199,11 +199,11 @@ $(document).ready(function() {
 	});
 
 	/* mouse happenings, only do on desktop */
-	socket.emit('mouse_connected', colorID, isMobile.any);
 	if (isMobile.any == false) {
 		var colorID = randomColor({
 		   luminosity: 'light'
-		});
+	});
+	socket.emit('mouse_connected', colorID, isMobile.any);
 
 		$('body').on('mousemove', function() {
 			var position = {
