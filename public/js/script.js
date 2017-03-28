@@ -165,25 +165,12 @@ $(document).ready(function() {
 
 	/* takes in signal to stop and stops the corresponding sound file */
 	socket.on('stop', function(number){
-		/* if it's frozen, do nothing */
-		if (frozen[number] == true) { 
-			console.log(number + " is frozen, can't stop");
-			return;
-		}
-
 		/* if it's playing, stop it on downbeat */
-		else if (sounds[number].state = "playing") {
+		if (sounds[number].state = "playing") {
 			console.log(number + " is playing, pinged by stop to play on downbeat");
 			$("#box" + number).removeClass("playing");
-			$("#box" + number).addClass("about-to-stop"); // change color to "about-to-stop"
-			frozen[number] = true;
-			Tone.Draw.schedule(function(){
-				$("#box" + number).removeClass("about-to-stop");
-				$("#box" + number).addClass("stopped"); // changed color to "stopped"
-				frozen[number] = false;
-				console.log(number + " stopped");
-			}, "@1n"); // return color on downbeat
-			sounds[number].stop("@1n"); // stop it on beat
+			$("#box" + number).addClass("stopped"); // change color to "about-to-stop"
+			sounds[number].stop(); // stop it on beat
 		};
 	});
 
